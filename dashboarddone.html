@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hệ thống Quản lý Công tác - THACO AGRI - V2.0</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    :root {
+      --primary: #00682B;
+      --primary-dark: #004d1f;
+      --secondary: #fffbd5;
+      --success: #28a745;
+      --warning: #ffc107;
+      --danger: #dc3545;
+      --info: #17a2b8;
+      --light: #f8f9fa;
+      --dark: #343a40;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 15px 15px 0 0;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+    
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 5px;
+    }
+    
+    .header .subtitle {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    
+    .user-info {
+      text-align: right;
+      font-size: 13px;
+      margin-top: -35px;
+    }
+    
+    /* Tabs */
+    .tabs {
+      display: flex;
+      background: white;
+      border-bottom: 2px solid #ddd;
+    }
+    
+    .tab {
+      flex: 1;
+      padding: 18px;
+      text-align: center;
+      cursor: pointer;
+      border: none;
+      background: #f8f9fa;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s;
+      border-right: 1px solid #ddd;
+    }
+    
+    .tab:last-child {
+      border-right: none;
+    }
+    
+    .tab:hover {
+      background: #e9ecef;
+    }
+    
+    .tab.active {
+      background: white;
+      color: var(--primary);
+      border-bottom: 3px solid var(--primary);
+    }
+    
+    /* Content */
+    .content {
+      background: white;
+      padding: 30px;
+      border-radius: 0 0 15px 15px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      min-height: 600px;
+    }
+    
+    .tab-pane {
+      display: none;
+    }
+    
+    .tab-pane.active {
+      display: block;
+      animation: fadeIn 0.3s;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .stat-card {
+      background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      text-align: center;
+      transition: transform 0.3s;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .stat-card h3 {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .stat-card .value {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    /* Filters */
+    .filters {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      align-items: end;
+    }
+    
+    .filter-group {
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    .filter-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #333;
+    }
+    
+    .filter-group input,
+    .filter-group select {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    
+    /* Table */
+    .table-container {
+      overflow-x: auto;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+    
+    thead {
+      background: var(--primary);
+      color: white;
+    }
+    
+    th {
+      padding: 15px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    tr:hover {
+      background: #f8f9fa;
+    }
+    
+    /* Buttons */
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+    
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+    
+    .btn-info {
+      background: var(--info);
+      color: white;
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+    
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+    
+    /* Badge */
+    .badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .badge-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .badge-completed {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .badge-vpdh {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+    
+    .badge-vip {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    
+    .badge-local {
+      background: #e2e3e5;
+      color: #383d41;
+    }
+    
+    /* Form */
+    .form-section {
+      background: #f8f9fa;
+      padding: 25px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+    }
+    
+    .form-section h2 {
+      color: var(--primary);
+      margin-bottom: 20px;
+      font-size: 20px;
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #333;
+    }
+    
+    .form-group label .required {
+      color: var(--danger);
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .checkbox-group input[type="checkbox"] {
+      width: auto;
+    }
+    
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .modal.active {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #eee;
+    }
+    
+    .modal-header h2 {
+      color: var(--primary);
+      font-size: 22px;
+    }
+    
+    .modal-close {
+      font-size: 28px;
+      cursor: pointer;
+      color: #999;
+    }
+    
+    .modal-close:hover {
+      color: #333;
+    }
+    
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      z-index: 2000;
+      display: none;
+    }
+    
+    .toast.active {
+      display: block;
+      animation: slideIn 0.3s;
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateX(400px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    .toast.success { background: var(--success); }
+    .toast.error { background: var(--danger); }
+    .toast.info { background: var(--info); }
+    
+    /* Loading */
+    .loading {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 3000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .loading.active {
+      display: flex;
+    }
+    
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading -->
+  <div class="loading" id="loading">
+    <div class="loading-spinner"></div>
+  </div>
+  
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+  
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>🏢 HỆ THỐNG QUẢN LÝ CÔNG TÁC</h1>
+      <p class="subtitle">THACO AGRI - KLH SNUOL - Version 2.0</p>
+      <div class="user-info">
+        <div id="userEmail">Loading...</div>
+        <div id="userRole">Loading...</div>
+      </div>
+    </div>
+    
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('reception')">
+        📋 Đón tiếp khách
+      </button>
+      <button class="tab" onclick="switchTab('business-trip')">
+        ✈️ Đi công tác
+      </button>
+    </div>
+    
+    <!-- Content -->
+    <div class="content">
+      <!-- Tab 1: Reception -->
+      <div class="tab-pane active" id="tab-reception">
+        <h2 style="color: var(--primary); margin-bottom: 20px;">📋 Quản lý Đón tiếp khách</h2>
+        
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h3>Tổng số đoàn</h3>
+            <div class="value" id="statTotalReception">0</div>
+          </div>
+          <div class="stat-card">
+            <h3>Xét duyệt</h3>
+            <div class="value" style="color: var(--warning)" id="statPendingReception">0</div>
+          </div>
+          <div class="stat-card">
+            <h3>Đã xử lý</h3>
+            <div class="value" style="color: var(--success)" id="statCompletedReception">0</div>
+          </div>
+          <div class="stat-card">
+            <h3>Tháng này</h3>
+            <div class="value" style="color: var(--info)" id="statMonthReception">0</div>
+          </div>
+        </div>
+        
+        <!-- New Form -->
+        <div class="form-section">
+          <h2>➕ Đăng ký đón tiếp khách mới</h2>
+          <form id="receptionForm">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Đoàn khách <span class="required">*</span></label>
+                <input type="text" id="doanKhach" required placeholder="VD: Ban CNTT VPDH">
+              </div>
+              <div class="form-group">
+                <label>Loại khách <span class="required">*</span></label>
+                <select id="loaiKhach" required>
+                  <option value="">-- Chọn --</option>
+                  <option value="VPDH">VPDH</option>
+                  <option value="Địa phương">Địa phương</option>
+                  <option value="VIP">VIP</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Giờ đến <span class="required">*</span></label>
+                <input type="time" id="gioDen" required>
+              </div>
+              <div class="form-group">
+                <label>Ngày đến <span class="required">*</span></label>
+                <input type="date" id="ngayDen" required>
+              </div>
+              <div class="form-group">
+                <label>Ngày đi <span class="required">*</span></label>
+                <input type="date" id="ngayDi" required>
+              </div>
+              <div class="form-group">
+                <label>Số lượng <span class="required">*</span></label>
+                <input type="number" id="soLuong" required min="1" onchange="updateGuestList()">
+              </div>
+            </div>
+            
+            <div id="guestListContainer"></div>
+            
+            <button type="submit" class="btn btn-primary">✅ Đăng ký</button>
+            <button type="button" class="btn btn-secondary" onclick="resetReceptionForm()">🔄 Reset</button>
+          </form>
+        </div>
+        
+        <!-- Filters -->
+        <div class="filters">
+          <div class="filter-group">
+            <label>Tìm kiếm</label>
+            <input type="text" id="searchReception" placeholder="Mã đón tiếp, đoàn khách..." onkeyup="filterReception()">
+          </div>
+          <div class="filter-group">
+            <label>Trạng thái</label>
+            <select id="filterStatus" onchange="filterReception()">
+              <option value="">Tất cả</option>
+              <option value="Xét duyệt">Xét duyệt</option>
+              <option value="Đã xử lý">Đã xử lý</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>Loại khách</label>
+            <select id="filterType" onchange="filterReception()">
+              <option value="">Tất cả</option>
+              <option value="VPDH">VPDH</option>
+              <option value="Địa phương">Địa phương</option>
+              <option value="VIP">VIP</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Table -->
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Mã</th>
+                <th>Đoàn khách</th>
+                <th>Loại</th>
+                <th>Ngày đến</th>
+                <th>Số lượng</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="receptionTableBody">
+              <tr>
+                <td colspan="7" style="text-align: center; padding: 40px;">
+                  Đang tải dữ liệu...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Tab 2: Business Trip -->
+      <div class="tab-pane" id="tab-business-trip">
+        <h2 style="color: var(--primary); margin-bottom: 20px;">✈️ Quản lý Đi công tác</h2>
+        
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h3>Tổng số đoàn</h3>
+            <div class="value" id="statTotalTrip">0</div>
+          </div>
+          <div class="stat-card">
+            <h3>Tháng này</h3>
+            <div class="value" style="color: var(--info)" id="statMonthTrip">0</div>
+          </div>
+          <div class="stat-card">
+            <h3>Tuần này</h3>
+            <div class="value" style="color: var(--warning)" id="statWeekTrip">0</div>
+          </div>
+          <div class="stat-card">
+            <h3>Hôm nay</h3>
+            <div class="value" style="color: var(--success)" id="statTodayTrip">0</div>
+          </div>
+        </div>
+        
+        <!-- New Form -->
+        <div class="form-section">
+          <h2>➕ Đăng ký đoàn công tác mới</h2>
+          <form id="businessTripForm">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Địa điểm <span class="required">*</span></label>
+                <select id="diaDiem" required>
+                  <option value="">-- Chọn --</option>
+                  <option value="Phnom Penh">Phnom Penh</option>
+                  <option value="Kratie">Kratie</option>
+                  <option value="VPDH">VPDH</option>
+                  <option value="Lào">Lào</option>
+                  <option value="Kounmom">Kounmom</option>
+                  <option value="Thaco">Thaco</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Trưởng đoàn <span class="required">*</span></label>
+                <input type="text" id="truongDoan" required placeholder="Họ tên trưởng đoàn">
+              </div>
+              <div class="form-group">
+                <label>Ngày đi <span class="required">*</span></label>
+                <input type="date" id="ngayDiTrip" required>
+              </div>
+              <div class="form-group">
+                <label>Ngày về <span class="required">*</span></label>
+                <input type="date" id="ngayVeTrip" required>
+              </div>
+              <div class="form-group">
+                <label>Số lượng <span class="required">*</span></label>
+                <input type="number" id="soLuongTrip" required min="1" onchange="updateMemberList()">
+              </div>
+            </div>
+            
+            <div id="memberListContainer"></div>
+            
+            <div style="margin: 20px 0; padding: 20px; background: white; border-radius: 8px;">
+              <h3 style="color: var(--primary); margin-bottom: 15px;">🎯 Yêu cầu hỗ trợ</h3>
+              <div style="display: grid; gap: 10px;">
+                <div class="checkbox-group">
+                  <input type="checkbox" id="datPhong">
+                  <label for="datPhong">🏨 Đặt phòng</label>
+                </div>
+                <div class="checkbox-group">
+                  <input type="checkbox" id="comTrua">
+                  <label for="comTrua">🍽️ Cơm trưa</label>
+                </div>
+                <div class="checkbox-group">
+                  <input type="checkbox" id="xeDuaDon">
+                  <label for="xeDuaDon">🚗 Xe đưa đón</label>
+                </div>
+                <div class="form-group">
+                  <label for="hoTroKhac">📝 Hỗ trợ khác</label>
+                  <textarea id="hoTroKhac" placeholder="Mô tả các yêu cầu hỗ trợ khác..."></textarea>
+                </div>
+              </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">✅ Đăng ký</button>
+            <button type="button" class="btn btn-secondary" onclick="resetBusinessTripForm()">🔄 Reset</button>
+          </form>
+        </div>
+        
+        <!-- Filters -->
+        <div class="filters">
+          <div class="filter-group">
+            <label>Tìm kiếm</label>
+            <input type="text" id="searchTrip" placeholder="Mã đoàn, địa điểm..." onkeyup="filterTrip()">
+          </div>
+          <div class="filter-group">
+            <label>Địa điểm</label>
+            <select id="filterLocation" onchange="filterTrip()">
+              <option value="">Tất cả</option>
+              <option value="Phnom Penh">Phnom Penh</option>
+              <option value="Kratie">Kratie</option>
+              <option value="VPDH">VPDH</option>
+              <option value="Lào">Lào</option>
+              <option value="Kounmom">Kounmom</option>
+              <option value="Thaco">Thaco</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Table -->
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Mã đoàn</th>
+                <th>Địa điểm</th>
+                <th>Trưởng đoàn</th>
+                <th>Ngày đi</th>
+                <th>Ngày về</th>
+                <th>Số lượng</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="tripTableBody">
+              <tr>
+                <td colspan="7" style="text-align: center; padding: 40px;">
+                  Đang tải dữ liệu...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal: View Reception Detail -->
+  <div class="modal" id="modalReceptionDetail">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>📋 Chi tiết đón tiếp</h2>
+        <span class="modal-close" onclick="closeModal('modalReceptionDetail')">&times;</span>
+      </div>
+      <div id="receptionDetailContent"></div>
+    </div>
+  </div>
+  
+  <!-- Modal: Process Reception -->
+  <div class="modal" id="modalProcessReception">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>⚙️ Xử lý đón tiếp</h2>
+        <span class="modal-close" onclick="closeModal('modalProcessReception')">&times;</span>
+      </div>
+      <form id="processForm">
+        <input type="hidden" id="processRowIndex">
+        <div class="form-group">
+          <label>Nơi ăn ở <span class="required">*</span></label>
+          <select id="noiAnO" required>
+            <option value="">-- Chọn --</option>
+            <option value="Nhà khách VP55">Nhà khách VP55</option>
+            <option value="XN BP1">XN BP1</option>
+            <option value="XN BP2">XN BP2</option>
+            <option value="XN ERC">XN ERC</option>
+            <option value="XN BÒ SS">XN BÒ SS</option>
+            <option value="Tổng kho">Tổng kho</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Phòng ở</label>
+          <input type="text" id="phongO" placeholder="VD: Phòng 101, 102">
+        </div>
+        <div class="form-group">
+          <label>Phương tiện</label>
+          <input type="text" id="phuongTien" placeholder="VD: Xe công ty, Xe thuê">
+        </div>
+        <div class="form-group">
+          <label>Hội họp</label>
+          <textarea id="hoiHop" placeholder="Thông tin về lịch hội họp, phòng họp..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-success">✅ Xác nhận xử lý</button>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Modal: View Trip Detail -->
+  <div class="modal" id="modalTripDetail">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>✈️ Chi tiết đi công tác</h2>
+        <span class="modal-close" onclick="closeModal('modalTripDetail')">&times;</span>
+      </div>
+      <div id="tripDetailContent"></div>
+    </div>
+  </div>
+  
+  <script>
+    // Global variables
+    let allReceptionData = [];
+    let filteredReceptionData = [];
+    let allTripData = [];
+    let filteredTripData = [];
+    let userInfo = {};
+    
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    window.onload = function() {
+      console.log('===== Dashboard V2.0 Loading =====');
+      loadUserInfo();
+      loadReceptionData();
+      loadBusinessTripData();
+    };
+    
+    // ============================================
+    // USER INFO
+    // ============================================
+    function loadUserInfo() {
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            userInfo = result;
+            document.getElementById('userEmail').textContent = result.email;
+            document.getElementById('userRole').textContent = 'Vai trò: ' + result.role;
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('Error loading user info:', error);
+        })
+        .getUserInfo();
+    }
+    
+    // ============================================
+    // TAB SWITCHING
+    // ============================================
+    function switchTab(tabName) {
+      // Remove active class from all tabs and panes
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      
+      // Add active class to selected tab and pane
+      if (tabName === 'reception') {
+        document.querySelectorAll('.tab')[0].classList.add('active');
+        document.getElementById('tab-reception').classList.add('active');
+      } else if (tabName === 'business-trip') {
+        document.querySelectorAll('.tab')[1].classList.add('active');
+        document.getElementById('tab-business-trip').classList.add('active');
+      }
+    }
+    
+    // ============================================
+    // UTILITY FUNCTIONS
+    // ============================================
+    function showLoading() {
+      document.getElementById('loading').classList.add('active');
+    }
+    
+    function hideLoading() {
+      document.getElementById('loading').classList.remove('active');
+    }
+    
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = 'toast ' + type + ' active';
+      
+      setTimeout(() => {
+        toast.classList.remove('active');
+      }, 4000);
+    }
+    
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.add('active');
+    }
+    
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+    
+    // ============================================
+    // RECEPTION MODULE
+    // ============================================
+    function loadReceptionData() {
+      console.log('Loading reception data...');
+      showLoading();
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          hideLoading();
+          console.log('Reception result:', result);
+          
+          if (result.success) {
+            allReceptionData = result.data || [];
+            filteredReceptionData = allReceptionData;
+            updateReceptionStats();
+            renderReceptionTable();
+            showToast('Tải dữ liệu đón tiếp thành công: ' + allReceptionData.length + ' bản ghi', 'success');
+          } else {
+            showToast('Lỗi: ' + result.error, 'error');
+            document.getElementById('receptionTableBody').innerHTML = 
+              '<tr><td colspan="7" style="text-align:center;padding:40px;color:red">❌ ' + result.error + '</td></tr>';
+          }
+        })
+        .withFailureHandler(function(error) {
+          hideLoading();
+          console.error('Reception error:', error);
+          showToast('Lỗi kết nối: ' + error.message, 'error');
+          document.getElementById('receptionTableBody').innerHTML = 
+            '<tr><td colspan="7" style="text-align:center;padding:40px;color:red">❌ Lỗi kết nối</td></tr>';
+        })
+        .getReceptionList({});
+    }
+    
+    function updateReceptionStats() {
+      const total = allReceptionData.length;
+      const pending = allReceptionData.filter(r => r.trangThai === 'Xét duyệt').length;
+      const completed = allReceptionData.filter(r => r.trangThai === 'Đã xử lý').length;
+      
+      const now = new Date();
+      const thisMonth = allReceptionData.filter(r => {
+        const date = new Date(r.timestamp);
+        return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+      }).length;
+      
+      document.getElementById('statTotalReception').textContent = total;
+      document.getElementById('statPendingReception').textContent = pending;
+      document.getElementById('statCompletedReception').textContent = completed;
+      document.getElementById('statMonthReception').textContent = thisMonth;
+    }
+    
+    function renderReceptionTable() {
+      const tbody = document.getElementById('receptionTableBody');
+      
+      if (filteredReceptionData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px">Không có dữ liệu</td></tr>';
+        return;
+      }
+      
+      let html = '';
+      filteredReceptionData.forEach(row => {
+        const statusBadge = row.trangThai === 'Xét duyệt' ? 'badge-pending' : 'badge-completed';
+        const typeBadge = row.loaiKhach === 'VPDH' ? 'badge-vpdh' : 
+                         row.loaiKhach === 'VIP' ? 'badge-vip' : 'badge-local';
+        
+        html += `
+          <tr>
+            <td><strong>${row.maDonTiep}</strong></td>
+            <td>${row.doanKhach}</td>
+            <td><span class="badge ${typeBadge}">${row.loaiKhach}</span></td>
+            <td>${row.ngayDen}</td>
+            <td>${row.soLuong} người</td>
+            <td><span class="badge ${statusBadge}">${row.trangThai}</span></td>
+            <td>
+              <button class="btn btn-info btn-sm" onclick="viewReceptionDetail(${row.rowIndex})">
+                👁️ Xem
+              </button>
+              ${row.trangThai === 'Xét duyệt' ? `
+                <button class="btn btn-success btn-sm" onclick="processReception(${row.rowIndex})">
+                  ⚙️ Xử lý
+                </button>
+              ` : ''}
+            </td>
+          </tr>
+        `;
+      });
+      
+      tbody.innerHTML = html;
+    }
+    
+    function filterReception() {
+      const search = document.getElementById('searchReception').value.toLowerCase();
+      const status = document.getElementById('filterStatus').value;
+      const type = document.getElementById('filterType').value;
+      
+      filteredReceptionData = allReceptionData.filter(row => {
+        const matchSearch = !search || 
+          row.maDonTiep.toLowerCase().includes(search) ||
+          row.doanKhach.toLowerCase().includes(search);
+        const matchStatus = !status || row.trangThai === status;
+        const matchType = !type || row.loaiKhach === type;
+        
+        return matchSearch && matchStatus && matchType;
+      });
+      
+      renderReceptionTable();
+    }
+    
+    function updateGuestList() {
+      const count = parseInt(document.getElementById('soLuong').value) || 0;
+      const container = document.getElementById('guestListContainer');
+      
+      if (count <= 0) {
+        container.innerHTML = '';
+        return;
+      }
+      
+      let html = '<div style="margin-top:20px;"><h3 style="color:var(--primary);margin-bottom:15px">👥 Danh sách khách (' + count + ' người)</h3>';
+      
+      for (let i = 1; i <= count; i++) {
+        html += `
+          <div style="padding:15px;background:white;border-radius:8px;margin-bottom:15px;border:2px solid #ddd">
+            <h4 style="color:var(--primary);margin-bottom:10px">Khách ${i}</h4>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Họ tên <span class="required">*</span></label>
+                <input type="text" id="guestName${i}" required>
+              </div>
+              <div class="form-group">
+                <label>Giới tính <span class="required">*</span></label>
+                <select id="guestGender${i}" required>
+                  <option value="">-- Chọn --</option>
+                  <option value="Nam">Nam</option>
+                  <option value="Nữ">Nữ</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Chức danh <span class="required">*</span></label>
+                <input type="text" id="guestPosition${i}" required>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+      
+      html += '</div>';
+      container.innerHTML = html;
+    }
+    
+    document.getElementById('receptionForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const soLuong = parseInt(document.getElementById('soLuong').value);
+      const danhSachKhach = [];
+      
+      for (let i = 1; i <= soLuong; i++) {
+        const ten = document.getElementById('guestName' + i).value;
+        const gioiTinh = document.getElementById('guestGender' + i).value;
+        const chucDanh = document.getElementById('guestPosition' + i).value;
+        
+        if (!ten || !gioiTinh || !chucDanh) {
+          showToast('Vui lòng điền đầy đủ thông tin khách thứ ' + i, 'error');
+          return;
+        }
+        
+        danhSachKhach.push({ ten, gioiTinh, chucDanh });
+      }
+      
+      const formData = {
+        doanKhach: document.getElementById('doanKhach').value,
+        loaiKhach: document.getElementById('loaiKhach').value,
+        gioDen: document.getElementById('gioDen').value,
+        ngayDen: document.getElementById('ngayDen').value,
+        ngayDi: document.getElementById('ngayDi').value,
+        soLuong: soLuong,
+        danhSachKhach: danhSachKhach
+      };
+      
+      showLoading();
+      google.script.run
+        .withSuccessHandler(function(result) {
+          hideLoading();
+          if (result.success) {
+            showToast(result.message, 'success');
+            resetReceptionForm();
+            loadReceptionData();
+          } else {
+            showToast('Lỗi: ' + result.error, 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          hideLoading();
+          showToast('Lỗi: ' + error.message, 'error');
+        })
+        .submitReception(formData);
+    });
+    
+    function resetReceptionForm() {
+      document.getElementById('receptionForm').reset();
+      document.getElementById('guestListContainer').innerHTML = '';
+    }
+    
+    function viewReceptionDetail(rowIndex) {
+      const row = allReceptionData.find(r => r.rowIndex === rowIndex);
+      if (!row) return;
+      
+      let guestListHtml = '<table style="width:100%;border-collapse:collapse;margin:15px 0"><thead><tr><th style="padding:10px;background:var(--primary);color:white">STT</th><th style="padding:10px;background:var(--primary);color:white">Họ tên</th><th style="padding:10px;background:var(--primary);color:white">Giới tính</th><th style="padding:10px;background:var(--primary);color:white">Chức danh</th></tr></thead><tbody>';
+      row.danhSachKhach.forEach((guest, i) => {
+        guestListHtml += `<tr><td style="padding:8px;border:1px solid #ddd;text-align:center">${i + 1}</td><td style="padding:8px;border:1px solid #ddd">${guest.ten}</td><td style="padding:8px;border:1px solid #ddd;text-align:center">${guest.gioiTinh}</td><td style="padding:8px;border:1px solid #ddd">${guest.chucDanh}</td></tr>`;
+      });
+      guestListHtml += '</tbody></table>';
+      
+      document.getElementById('receptionDetailContent').innerHTML = `
+        <table style="width:100%;margin:15px 0">
+          <tr><td style="padding:8px;font-weight:bold;width:200px">Mã đón tiếp:</td><td style="padding:8px"><strong>${row.maDonTiep}</strong></td></tr>
+          <tr><td style="padding:8px;font-weight:bold">Đoàn khách:</td><td style="padding:8px"><strong>${row.doanKhach}</strong></td></tr>
+          <tr><td style="padding:8px;font-weight:bold">Loại khách:</td><td style="padding:8px">${row.loaiKhach}</td></tr>
+          <tr><td style="padding:8px;font-weight:bold">Giờ đến:</td><td style="padding:8px">${row.gioDen}</td></tr>
+          <tr><td style="padding:8px;font-weight:bold">Ngày đến:</td><td style="padding:8px"><strong>${row.ngayDen}</strong></td></tr>
+          <tr><td style="padding:8px;font-weight:bold">Ngày đi:</td><td style="padding:8px"><strong>${row.ngayDi}</strong></td></tr>
+          <tr><td style="padding:8px;font-weight:bold">Số lượng:</td><td style="padding:8px">${row.soLuong} người</td></tr>
+          <tr><td style="padding:8px;font-weight:bold">Người đăng ký:</td><td style="padding:8px">${row.nguoiDangKy} (${row.ngayDangKy})</td></tr>
+          <tr><td style="padding:8px;font-weight:bold">Trạng thái:</td><td style="padding:8px"><span class="badge ${row.trangThai === 'Xét duyệt' ? 'badge-pending' : 'badge-completed'}">${row.trangThai}</span></td></tr>
+        </table>
+        <h3 style="color:var(--primary);margin:20px 0 10px 0">👥 Danh sách khách</h3>
+        ${guestListHtml}
+        ${row.trangThai === 'Đã xử lý' ? `
+          <div style="margin-top:20px;padding:15px;background:#f8f9fa;border-radius:8px">
+            <h3 style="color:var(--primary);margin-bottom:10px">✅ Thông tin xử lý</h3>
+            <table style="width:100%">
+              <tr><td style="padding:8px;font-weight:bold;width:200px">Nơi ăn ở:</td><td style="padding:8px">${row.noiAnO || 'Chưa cập nhật'}</td></tr>
+              <tr><td style="padding:8px;font-weight:bold">Phòng ở:</td><td style="padding:8px">${row.phongO || 'Chưa cập nhật'}</td></tr>
+              <tr><td style="padding:8px;font-weight:bold">Phương tiện:</td><td style="padding:8px">${row.phuongTien || 'Chưa cập nhật'}</td></tr>
+              <tr><td style="padding:8px;font-weight:bold">Hội họp:</td><td style="padding:8px">${row.hoiHop || 'Chưa cập nhật'}</td></tr>
+              <tr><td style="padding:8px;font-weight:bold">Người xử lý:</td><td style="padding:8px">${row.nguoiXuLy} (${row.ngayXuLy})</td></tr>
+            </table>
+          </div>
+        ` : ''}
+      `;
+      
+      openModal('modalReceptionDetail');
+    }
+    
+    function processReception(rowIndex) {
+      document.getElementById('processRowIndex').value = rowIndex;
+      openModal('modalProcessReception');
+    }
+    
+    document.getElementById('processForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const rowIndex = parseInt(document.getElementById('processRowIndex').value);
+      const formData = {
+        noiAnO: document.getElementById('noiAnO').value,
+        phongO: document.getElementById('phongO').value,
+        phuongTien: document.getElementById('phuongTien').value,
+        hoiHop: document.getElementById('hoiHop').value
+      };
+      
+      showLoading();
+      google.script.run
+        .withSuccessHandler(function(result) {
+          hideLoading();
+          if (result.success) {
+            showToast(result.message, 'success');
+            closeModal('modalProcessReception');
+            loadReceptionData();
+          } else {
+            showToast('Lỗi: ' + result.error, 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          hideLoading();
+          showToast('Lỗi: ' + error.message, 'error');
+        })
+        .updateReceptionProcessing(rowIndex, formData);
+    });
+    
+    // ============================================
+    // BUSINESS TRIP MODULE
+    // ============================================
+    function loadBusinessTripData() {
+      console.log('Loading business trip data...');
+      showLoading();
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          hideLoading();
+          console.log('Business trip result:', result);
+          
+          if (result.success) {
+            allTripData = result.data || [];
+            filteredTripData = allTripData;
+            updateTripStats();
+            renderTripTable();
+            showToast('Tải dữ liệu công tác thành công: ' + allTripData.length + ' bản ghi', 'success');
+          } else {
+            showToast('Lỗi: ' + result.error, 'error');
+            document.getElementById('tripTableBody').innerHTML = 
+              '<tr><td colspan="7" style="text-align:center;padding:40px;color:red">❌ ' + result.error + '</td></tr>';
+          }
+        })
+        .withFailureHandler(function(error) {
+          hideLoading();
+          console.error('Business trip error:', error);
+          showToast('Lỗi kết nối: ' + error.message, 'error');
+          document.getElementById('tripTableBody').innerHTML = 
+            '<tr><td colspan="7" style="text-align:center;padding:40px;color:red">❌ Lỗi kết nối</td></tr>';
+        })
+        .getBusinessTripList({});
+    }
+    
+    function updateTripStats() {
+      const total = allTripData.length;
+      const now = new Date();
+      
+      const thisMonth = allTripData.filter(r => {
+        const date = new Date(r.timestamp);
+        return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+      }).length;
+      
+      const thisWeek = allTripData.filter(r => {
+        const date = new Date(r.timestamp);
+        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        return date >= weekAgo;
+      }).length;
+      
+      const today = allTripData.filter(r => {
+        const date = new Date(r.timestamp);
+        return date.toDateString() === now.toDateString();
+      }).length;
+      
+      document.getElementById('statTotalTrip').textContent = total;
+      document.getElementById('statMonthTrip').textContent = thisMonth;
+      document.getElementById('statWeekTrip').textContent = thisWeek;
+      document.getElementById('statTodayTrip').textContent = today;
+    }
+    
+    function renderTripTable() {
+      const tbody = document.getElementById('tripTableBody');
+      
+      if (filteredTripData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px">Không có dữ liệu</td></tr>';
+        return;
+      }
+      
+      let html = '';
+      filteredTripData.forEach(row => {
+        html += `
+          <tr>
+            <td><strong>${row.maDoan}</strong></td>
+            <td>${row.diaDiem}</td>
+            <td>${row.truongDoan}</td>
+            <td>${row.ngayDi}</td>
+            <td>${row.ngayVe}</td>
+            <td>${row.soLuong} người</td>
+            <td>
+              <button class="btn btn-info btn-sm" onclick="viewTripDetail(${row.rowIndex})">
+                👁️ Xem
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+      
+      tbody.innerHTML = html;
+    }
+    
+    function filterTrip() {
+      const search = document.getElementById('searchTrip').value.toLowerCase();
+      const location = document.getElementById('filterLocation').value;
+      
+      filteredTripData = allTripData.filter(row => {
+        const matchSearch = !search || 
+          row.maDoan.toLowerCase().includes(search) ||
+          row.diaDiem.toLowerCase().includes(search) ||
+          row.truongDoan.toLowerCase().includes(search);
+        const matchLocation = !location || row.diaDiem === location;
+        
+        return matchSearch && matchLocation;
+      });
+      
+      renderTripTable();
+    }
+    
+    function updateMemberList() {
+      const count = parseInt(document.getElementById('soLuongTrip').value) || 0;
+      const container = document.getElementById('memberListContainer');
+      
+      if (count <= 0) {
+        container.innerHTML = '';
+        return;
+      }
+      
+      let html = '<div style="margin-top:20px;"><h3 style="color:var(--primary);margin-bottom:15px">👥 Danh sách thành viên (' + count + ' người)</h3>';
+      
+      for (let i = 1; i <= count; i++) {
+        html += `
+          <div style="padding:15px;background:white;border-radius:8px;margin-bottom:15px;border:2px solid #ddd">
+            <h4 style="color:var(--primary);margin-bottom:10px">Thành viên ${i}</h4>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Họ tên <span class="required">*</span></label>
+                <input type="text" id="memberName${i}" required>
+              </div>
+              <div class="form-group">
+                <label>Chức danh <span class="required">*</span></label>
+                <input type="text" id="memberPosition${i}" required>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+      
+      html += '</div>';
+      container.innerHTML = html;
+    }
+    
+    document.getElementById('businessTripForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const soLuong = parseInt(document.getElementById('soLuongTrip').value);
+      const danhSachThanhVien = [];
+      
+      for (let i = 1; i <= soLuong; i++) {
+        const ten = document.getElementById('memberName' + i).value;
+        const chucDanh = document.getElementById('memberPosition' + i).value;
+        
+        if (!ten || !chucDanh) {
+          showToast('Vui lòng điền đầy đủ thông tin thành viên thứ ' + i, 'error');
+          return;
+        }
+        
+        danhSachThanhVien.push({ ten, chucDanh });
+      }
+      
+      const ngayDi = new Date(document.getElementById('ngayDiTrip').value);
+      const ngayVe = new Date(document.getElementById('ngayVeTrip').value);
+      
+      if (ngayVe < ngayDi) {
+        showToast('Ngày về phải sau hoặc bằng ngày đi!', 'error');
+        return;
+      }
+      
+      const formData = {
+        diaDiem: document.getElementById('diaDiem').value,
+        truongDoan: document.getElementById('truongDoan').value,
+        ngayDi: document.getElementById('ngayDiTrip').value,
+        ngayVe: document.getElementById('ngayVeTrip').value,
+        soLuong: soLuong,
+        danhSachThanhVien: danhSachThanhVien,
+        datPhong: document.getElementById('datPhong').checked,
+        comTrua: document.getElementById('comTrua').checked,
+        xeDuaDon: document.getElementById('xeDuaDon').checked,
+        hoTroKhac: document.getElementById('hoTroKhac').value
+      };
+      
+      showLoading();
+      google.script.run
+        .withSuccessHandler(function(result) {
+          hideLoading();
+          if (result.success) {
+            showToast(result.message, 'success');
+            resetBusinessTripForm();
+            loadBusinessTripData();
+          } else {
+            showToast('Lỗi: ' + result.error, 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          hideLoading();
+          showToast('Lỗi: ' + error.message, 'error');
+        })
+        .submitBusinessTrip(formData);
+    });
+    
+    function resetBusinessTripForm() {
+      document.getElementById('businessTripForm').reset();
+      document.getElementById('memberListContainer').innerHTML = '';
+    }
+    
+    function viewTripDetail(rowIndex) {
+      const row = allTripData.find(r => r.rowIndex === rowIndex);
+      if (!row) return;
+      
+      let memberListHtml = '<table style="width:100%;border-collapse:collapse;margin:15px 0"><thead><tr><th style="padding:10px;background:var(--primary);color:white">STT</th><th style="padding:10px;background:var(--primary);color:white">Họ tên</th><th style="padding:10px;background:var(--primary);color:white">Chức danh</th></tr></thead><tbody>';
+      row.danhSachThanhVien.forEach((member, i) => {
+        memberListHtml += `<tr><td style="padding:8px;border:1px solid #ddd;text-align:center">${i + 1}</td><td style="padding:8px;border:1px solid #ddd">${member.ten}</td><td style="padding:8px;border:1px solid #ddd">${member.chucDanh}</td></tr>`;
+      });
+      memberListHtml += '</tbody></table>';
+      
+      let supportList = [];
+      if (row.datPhong) supportList.push('🏨 Đặt phòng');
+      if (row.comTrua) supportList.push('🍽️ Cơm trưa');
+      if (row.xeDuaDon) supportList.push('🚗 Xe đưa đón');
+      if (row.hoTroKhac) supportList.push('📝 Khác: ' + row.hoTroKhac);
+      const supportHtml = supportList.length > 0 ? supportList.join('<br>') : 'Không yêu cầu hỗ trợ';
+      
+      document.getElementById('tripDetailContent').innerHTML = `
+        <table style="width:100%;margin:15px 0">
+          <tr><td style="padding:8px;font-weight:bold;width:200px">Mã đoàn:</td><td style="padding:8px"><strong>${row.maDoan}</strong></td></tr>
+          <tr><td style="padding:8px;font-weight:bold">Địa điểm:</td><td style="padding:8px"><strong>${row.diaDiem}</strong></td></tr>
+          <tr><td style="padding:8px;font-weight:bold">Trưởng đoàn:</td><td style="padding:8px"><strong>${row.truongDoan}</strong></td></tr>
+          <tr><td style="padding:8px;font-weight:bold">Ngày đi:</td><td style="padding:8px"><strong>${row.ngayDi}</strong></td></tr>
+          <tr><td style="padding:8px;font-weight:bold">Ngày về:</td><td style="padding:8px"><strong>${row.ngayVe}</strong></td></tr>
+          <tr><td style="padding:8px;font-weight:bold">Số lượng:</td><td style="padding:8px">${row.soLuong} người</td></tr>
+          <tr><td style="padding:8px;font-weight:bold">Người tạo:</td><td style="padding:8px">${row.nguoiTao} (${row.ngayTao})</td></tr>
+        </table>
+        <h3 style="color:var(--primary);margin:20px 0 10px 0">👥 Danh sách thành viên</h3>
+        ${memberListHtml}
+        <div style="margin-top:20px;padding:15px;background:#f8f9fa;border-radius:8px">
+          <h3 style="color:var(--primary);margin-bottom:10px">🎯 Yêu cầu hỗ trợ</h3>
+          <div style="line-height:1.8">${supportHtml}</div>
+        </div>
+      `;
+      
+      openModal('modalTripDetail');
+    }
+    
+    console.log('✅ Dashboard V2.0 loaded successfully');
+  </script>
+</body>
+</html>
